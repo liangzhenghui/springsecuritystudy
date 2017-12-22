@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:sec="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/security 
+		http://www.springframework.org/schema/security/spring-security-4.2.xsd
+		http://www.springframework.org/schema/mvc 
+		http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/beans 
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context 
+		http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+	<context:property-placeholder location="classpath:database.properties" />
+	<sec:http auto-config="true">
+		<sec:intercept-url pattern="/**" access="hasRole('ROLE_USER')" />
+		<!-- Basic Login Form -->
+		<!-- <sec:http-basic/> -->
+		<sec:form-login login-page="/login.html"/>
+		<sec:intercept-url pattern="/login.html" access="hasRole('ANONYMOUS')"/>
+	</sec:http>
+	<sec:authentication-manager>
+		<sec:authentication-provider user-service-ref="jdbcDaoImpl">
+			<!-- Password Encoder -->
+			<sec:password-encoder hash="bcrypt"/>
+			
+			<!-- JDBC authentication using datasoure-->
+			<!-- 
+			<sec:jdbc-user-service data-source-ref="dataSource"/>
+			 -->
+			<!-- In-Memory authentication -->
+			<!-- 
+			<sec:user-service>
+				<sec:user name="tinhcao" password="tinhcao" authorities="ROLE_USER" />
+				<sec:user name="kua" password="kua" authorities="ROLE_USER" />
+				<sec:user name="oc" password="oc" authorities="ROLE_USER" />
+			</sec:user-service>
+			 -->
+		</sec:authentication-provider>
+	</sec:authentication-manager>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/springsec" />
+		<property name="username" value="root" />
+		<property name="password" value="root" />
+	</bean>
+
+	<!-- JDBC Dao Impl for Spring security -->
+	<bean id="jdbcDaoImpl"
+		class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	<!-- Flyway -->
+	<bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+</beans>
+ 
