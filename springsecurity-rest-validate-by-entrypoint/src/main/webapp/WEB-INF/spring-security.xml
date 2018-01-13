@@ -1,0 +1,76 @@
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:security="http://www.springframework.org/schema/security"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-4.2.xsd">
+	
+	
+	<!-- why <beans:beans>
+	In many of the examples you will see (and in the sample applications), we will often use "security" as the default namespace rather than "beans", which means we can omit the prefix on all the security namespace elements, making the content easier to read. You may also want to do this if you have your application context divided up into separate files and have most of your security configuration in one of them. Your security application context file would then start like this
+		<beans:beans xmlns="http://www.springframework.org/schema/security"
+		xmlns:beans="http://www.springframework.org/schema/beans"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://www.springframework.org/schema/beans
+				http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+				http://www.springframework.org/schema/security
+				http://www.springframework.org/schema/security/spring-security.xsd">
+			...
+		</beans:beans> -->
+	
+	
+	
+	
+	
+	
+	<!-- <http entry-point-ref="myBasicAuthenticationEntryPoint"> <intercept-url 
+		pattern="/mobile/wq/bm" access="hasRole('ROLE_ADMIN')" /> </http> -->
+	<!-- use-expressions="false" 
+
+	<http pattern="/login.htm*" security="none" />
+	<http use-expressions="false">
+		<intercept-url pattern='/**' access='ROLE_USER' />
+		<form-login login-page='/login.htm' default-target-url='/home.htm'
+			always-use-default-target='true' />
+	</http>
+	-->
+	
+	<beans:bean id="appAuthenticationEntryPoint" class="common.entrypoint.AppAuthenticationEntryPoint">
+    </beans:bean> 
+    
+	<!-- enable use-expressions -->
+	<http use-expressions="true" entry-point-ref="appAuthenticationEntryPoint">
+		<!-- 当配置使用Spring Security的“匿名身份验证”过滤器时，ROLE_ANONYMOUS是分配给未经身份验证（匿名）用户的默认角色。 这是默认启用的。 -->
+		<intercept-url pattern="/login.jsp" access="hasRole('ROLE_ANONYMOUS')" />
+		<intercept-url pattern="/admin**" access="hasRole('ROLE_ADMIN')" />
+		<intercept-url pattern="/mobile/wq/bm" access="hasRole('ROLE_ADMIN')" />
+		<!-- As of Spring Security 4.0, CSRF protection is enabled by default with 
+			XML configuration. If you would like to disable CSRF protection -->
+		<!-- post请求需要带csrf,否则禁止访问 -->
+		<csrf disabled="true" />
+	<!-- 	<form-login login-page="/login" default-target-url="/welcome"
+			authentication-failure-url="/login?error" username-parameter="username"
+			password-parameter="password" />
+		<form-login /> -->
+		<!-- 弹出一个对话框 -->
+		<!-- <http-basic/> -->
+		<!-- 单页面情况下暂时没找到方法带crsf到后端验证 -->
+		<logout logout-success-url="/login?logout" />
+		<!-- <access-denied-handler error-page="/403" /> -->
+	</http>
+
+	<!-- Select users and user_roles from database -->
+	<!-- <authentication-manager> <authentication-provider> <jdbc-user-service 
+		data-source-ref="dataSource" users-by-username-query="select username,password 
+		from users where username=?" authorities-by-username-query="select username, 
+		role from user_roles where username =?" /> </authentication-provider> </authentication-manager> -->
+	<authentication-manager>
+		<authentication-provider>
+			<user-service>
+				<user name="test" password="test" authorities="ROLE_USER, ROLE_ADMIN" />
+				<user name="test1" password="test1" authorities="ROLE_USER" />
+			</user-service>
+		</authentication-provider>
+	</authentication-manager>
+</beans:beans>
