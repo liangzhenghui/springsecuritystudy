@@ -57,7 +57,7 @@
 		<!-- <http-basic/> -->
 		<!-- 单页面情况下暂时没找到方法带crsf到后端验证 -->
 		<logout logout-success-url="/login?logout" />
-		<!-- <access-denied-handler error-page="/403" /> -->
+	<!-- 	<access-denied-handler error-page="/403" /> -->
 	</http>
 
 	<!-- Select users and user_roles from database -->
