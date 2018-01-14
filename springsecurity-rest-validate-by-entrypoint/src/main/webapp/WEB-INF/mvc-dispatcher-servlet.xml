@@ -100,5 +100,4 @@
 		</property>
 	</bean>
 	<bean id="wqService" class="web.service.WqService"></bean>
-	<bean id="myBasicAuthenticationEntryPoint" class="web.config.MyBasicAuthenticationEntryPoint"></bean>
 </beans>
